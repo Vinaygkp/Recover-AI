@@ -1,0 +1,88 @@
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+html {
+  scroll-behavior: smooth;
+}
+
+/* Premium dark theme & design system tokens */
+:root {
+  --bg-primary: #000000;
+  --bg-secondary: #0c0c0e;
+  --bg-card: #121216;
+  --bg-elevated: #1a1a20;
+  --surface-50: #fafafa;
+  --surface-100: #0c0c0e;
+  --surface-200: #121216;
+  --surface-300: #1a1a20;
+  --surface-400: #22222a;
+  --surface-500: #2a2a35;
+  --border-subtle: rgba(255,255,255,0.06);
+  --border-default: rgba(255,255,255,0.12);
+  --text-primary: #ffffff;
+  --text-secondary: #a0a0ab;
+  --text-muted: #666670;
+  --accent-green: #00D26A;
+  --accent-amber: #FFB020;
+  --accent-red: #FF4C4C;
+  --accent-purple: #9333ea;
+  --accent-cyan: #06b6d4;
+  --glass-bg: rgba(18, 18, 22, 0.7);
+  --header-bg: #080808;
+  --main-bg: #000000;
+}
+
+body {
+  background: var(--bg-primary);
+  color: var(--text-primary);
+  font-family: 'Inter', system-ui, -apple-system, sans-serif;
+  -webkit-font-smoothing: antialiased;
+  overflow-x: hidden;
+}
+
+/* Subtle noise texture overlay with ambient radial lighting */
+.noise-bg {
+  position: relative;
+}
+.noise-bg::before {
+  content: '';
+  position: absolute;
+  inset: 0;
+  background-image: url("data:image/svg+xml,%3Csvg viewBox='0 0 200 200' xmlns='http://www.w3.org/2000/svg'%3E%3Cfilter id='noiseFilter'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.65' numOctaves='3' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23noiseFilter)'/%3E%3C/svg%3E");
+  opacity: 0.025;
+  pointer-events: none;
+  z-index: 10;
+}
+
+/* Custom scrollbar */
+::-webkit-scrollbar { width: 6px; height: 6px; }
+::-webkit-scrollbar-track { background: transparent; }
+::-webkit-scrollbar-thumb { background: rgba(255,255,255,0.12); border-radius: 3px; }
+::-webkit-scrollbar-thumb:hover { background: rgba(255,255,255,0.25); }
+
+/* Premium utility classes & micro-interaction transitions */
+.glass { 
+  background: rgba(18, 18, 22, 0.7); 
+  backdrop-filter: blur(24px); 
+  -webkit-backdrop-filter: blur(24px);
+}
+.card-border { 
+  border: 1px solid rgba(255,255,255,0.08); 
+  transition: all 0.25s cubic-bezier(0.16, 1, 0.3, 1);
+}
+.card-border:hover {
+  border-color: rgba(0, 210, 106, 0.4);
+  transform: translateY(-2px);
+  box-shadow: 0 10px 30px rgba(0,0,0,0.8), 0 0 20px rgba(0,210,106,0.08);
+}
+.glow-green { box-shadow: 0 0 25px rgba(0,210,106,0.15); }
+
+/* Custom slow spin utility */
+@keyframes spinSlow {
+  from { transform: rotate(0deg); }
+  to { transform: rotate(360deg); }
+}
+.animate-spin-slow {
+  animation: spinSlow 12s linear infinite;
+}

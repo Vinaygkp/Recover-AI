@@ -26,6 +26,7 @@ const api = axios.create({
   },
 });
 
+// Request Interceptor: Attach Token securely
 api.interceptors.request.use((config) => {
   try {
     const token = localStorage.getItem('recover_ai_token') || sessionStorage.getItem('recover_ai_token');
@@ -40,38 +41,27 @@ api.interceptors.request.use((config) => {
   return Promise.reject(error);
 });
 
+// Response Interceptor: Handle 401 Unauthorized cleanly
 api.interceptors.response.use(
   (response) => response,
   async (error) => {
     const originalRequest = error.config;
-
-    // Do NOT intercept auth endpoints (login / register) so user sees clean 400/401 messages
     const isAuthEndpoint = originalRequest?.url?.includes('/auth/login') || originalRequest?.url?.includes('/auth/register');
 
-    if (error.response?.status === 401 && originalRequest && !originalRequest._retry && !isAuthEndpoint) {
-      originalRequest._retry = true;
+    // If unauthorized and not an auth route, clear stale tokens and redirect to login
+    if (error.response?.status === 401 && !isAuthEndpoint) {
       try {
-        const res = await axios.post(`${api.defaults.baseURL}/auth/login`, {
-          email: 'merchant@recover.ai',
-          password: 'testpassword123'
-        });
-
-        if (res.data && res.data.access_token) {
-          const newToken = res.data.access_token;
-          const newUser = res.data.user;
-
-          localStorage.setItem('recover_ai_token', newToken);
-          localStorage.setItem('recover_ai_user', JSON.stringify(newUser));
-          sessionStorage.setItem('recover_ai_token', newToken);
-          sessionStorage.setItem('recover_ai_user', JSON.stringify(newUser));
-
-          if (originalRequest.headers) {
-            originalRequest.headers.Authorization = `Bearer ${newToken}`;
-          }
-          return api(originalRequest);
+        localStorage.removeItem('recover_ai_token');
+        localStorage.removeItem('recover_ai_user');
+        sessionStorage.removeItem('recover_ai_token');
+        sessionStorage.removeItem('recover_ai_user');
+        
+        // Prevent infinite loops and redirect to login if not already there
+        if (window.location.pathname !== '/login') {
+          window.location.href = '/login';
         }
-      } catch (retryErr) {
-        console.error('Seamless session recovery failed:', retryErr);
+      } catch (err) {
+        console.error('Failed to handle session expiration', err);
       }
     }
 

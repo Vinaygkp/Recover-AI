@@ -1,24 +1,22 @@
 import axios from 'axios';
 
-// Centralized API Base URL resolved from environment (VITE_API_BASE_URL or VITE_API_URL)
+// Centralized API Base URL resolved safely from Vite environment variables
 const getBaseUrl = (): string => {
   try {
-    const meta = (import.meta as unknown as { env?: { VITE_API_BASE_URL?: string; VITE_API_URL?: string } });
-    if (meta && meta.env) {
-      if (meta.env.VITE_API_BASE_URL) {
-        const base = meta.env.VITE_API_BASE_URL.replace(/\/$/, '');
-        return base.endsWith('/api') ? base : `${base}/api`;
-      }
-      if (meta.env.VITE_API_URL) {
-        return meta.env.VITE_API_URL;
+    const env = (import.meta as any)?.env;
+    if (env) {
+      const baseUrl = env.VITE_API_BASE_URL || env.VITE_API_URL;
+      if (baseUrl) {
+        const cleanBase = baseUrl.replace(/\/$/, '');
+        return cleanBase.endsWith('/api') ? cleanBase : `${cleanBase}/api`;
       }
     }
   } catch (err) {
     console.error('Error resolving API base URL environment variable:', err);
   }
   
-  // Default relative '/api' for proxy/production routing
-  return '/api';
+  // Production fallback directly pointing to the live Render backend
+  return 'https://recover-ai-gyiv.onrender.com/api';
 };
 
 const api = axios.create({

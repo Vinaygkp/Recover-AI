@@ -81,14 +81,14 @@ async def analyze_recovery_case(case_data: Dict[str, Any], ml_prediction: Dict[s
 
     if not settings.OPENAI_API_KEY:
         return {
-            "status": "AVAILABLE", 
+            "status": "UNAVAILABLE",
             "model_version": _model(),
-            "diagnosis": f"ML model evaluates case with {ml_prob * 100:.1f}% recovery confidence for amount ₹{case_amount}.",
-            "root_cause": "Transient Bank Gateway Timeout", 
-            "recommended_action": "retry" if ml_prob > 0.6 else "manual_review", 
+            "diagnosis": "AI diagnosis is unavailable because the OpenAI service is not configured.",
+            "root_cause": "AI service unavailable",
+            "recommended_action": "manual_review",
             "priority": "high" if case_amount >= 10000 else "medium",
-            "confidence": ml_prob, 
-            "reason": "Automated ML scoring recommends gateway retry.",
+            "confidence": 0.0,
+            "reason": "Route the case to manual review until an AI diagnosis is available.",
             "policy_check_required": True
         }
 
@@ -123,13 +123,13 @@ Provide structured JSON diagnosis following system instructions."""
         }
     except Exception:
         return {
-            "status": "AVAILABLE", "model_version": _model(),
-            "diagnosis": f"ML model evaluates case with {ml_prob * 100:.1f}% recovery confidence for amount ₹{case_amount}.",
-            "root_cause": "Transient Bank Gateway Timeout", 
-            "recommended_action": "retry" if ml_prob > 0.6 else "manual_review", 
+            "status": "UNAVAILABLE", "model_version": _model(),
+            "diagnosis": "AI diagnosis returned an invalid or unavailable response.",
+            "root_cause": "AI service response invalid",
+            "recommended_action": "manual_review",
             "priority": "high" if case_amount >= 10000 else "medium",
-            "confidence": ml_prob, 
-            "reason": "Automated ML recovery assessment active.",
+            "confidence": 0.0,
+            "reason": "Route the case to manual review until a valid AI diagnosis is available.",
             "policy_check_required": True
         }
 

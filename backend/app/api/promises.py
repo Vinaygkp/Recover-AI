@@ -9,8 +9,8 @@ from app.models.promise import PromiseToPayCreate, PromiseStatus
 
 router = APIRouter()
 
-@router.post("")
-@router.post("/")
+@router.post("", operation_id="create_promise")
+@router.post("/", operation_id="create_promise_root")
 async def create_promise(
     req: PromiseToPayCreate,
     user: Optional[dict] = Depends(get_optional_current_user),

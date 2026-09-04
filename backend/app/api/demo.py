@@ -6,8 +6,8 @@ from app.services.synthetic import generate_demo_data
 
 router = APIRouter()
 
-@router.api_route("/generate", methods=["GET", "POST"])
-@router.api_route("/generate-data", methods=["GET", "POST"])
+@router.api_route("/generate", methods=["GET", "POST"], operation_id="generate_demo_data")
+@router.api_route("/generate-data", methods=["GET", "POST"], operation_id="generate_demo_data_alias")
 async def trigger_demo_data(user: Optional[dict] = Depends(get_optional_current_user), db = Depends(get_database)):
     user_dict = user or {"id": "demo_user", "email": "merchant@recover.ai", "merchant_id": "demo_merchant_1"}
     merchant_id = user_dict.get("merchant_id", "demo_merchant_1")

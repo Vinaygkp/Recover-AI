@@ -42,9 +42,9 @@ async def get_case_from_db(db, case_id: str):
         case = await db["recovery_cases"].find_one({"transaction_id": case_id})
     return case
 
-@router.post("/order")
-@router.post("/create-order")
-@router.post("/create_order")
+@router.post("/order", operation_id="create_payment_order")
+@router.post("/create-order", operation_id="create_payment_order_alias")
+@router.post("/create_order", operation_id="create_payment_order_legacy_alias")
 async def create_payment_order(
     req: OrderCreateRequest, 
     user: Optional[dict] = Depends(get_optional_current_user), 

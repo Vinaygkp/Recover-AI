@@ -40,7 +40,7 @@ app.add_middleware(
     allow_headers=["*"],
 )
 
-@app.get("/")
+@app.get("/", operation_id="root")
 async def root():
     return {
         "app": "RECOVER AI Backend",
@@ -49,8 +49,8 @@ async def root():
         "health": "/api/health"
     }
 
-@app.get("/api/health")
-@app.get("/api/system/health")
+@app.get("/api/health", operation_id="health_check")
+@app.get("/api/system/health", operation_id="system_health_check")
 async def health_check():
     rzp_configured = RazorpayService().is_configured()
     model_exists = os.path.exists("app/ml/recovery_model.joblib")

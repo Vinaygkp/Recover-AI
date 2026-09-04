@@ -2,7 +2,7 @@ import React, { useState, useEffect } from 'react';
 import { useNavigate, useLocation, Link } from 'react-router-dom';
 import { motion } from 'framer-motion';
 import { cn } from '../../lib/utils';
-import { Sparkles, Menu, X } from 'lucide-react';
+import { Menu, X } from 'lucide-react';
 
 export function Navbar() {
   const [isScrolled, setIsScrolled] = useState(false);
@@ -42,11 +42,14 @@ export function Navbar() {
     >
       <div className="w-full max-w-[1600px] mx-auto px-6 sm:px-10 h-full flex items-center justify-between relative z-[101]">
         
-        {/* Brand Logo & Name */}
+        {/* Brand Logo & Name with Razorpay Styling */}
         <div className="flex items-center gap-3 group cursor-pointer" onClick={handleHomeClick}>
-          <div className="w-9 h-9 rounded-xl bg-gradient-to-tr from-amber-400 via-yellow-400 to-amber-500 p-[1px] shadow-[0_0_20px_rgba(245,158,11,0.4)] group-hover:scale-105 transition-transform">
-            <div className="w-full h-full bg-[#0a0a0a] rounded-[11px] flex items-center justify-center">
-              <Sparkles className="w-4 h-4 text-yellow-400 animate-pulse" />
+          <div className="w-9 h-9 rounded-xl bg-gradient-to-tr from-sky-400 via-blue-500 to-amber-400 p-[1px] shadow-[0_0_20px_rgba(56,189,248,0.3)] group-hover:scale-105 transition-transform">
+            <div className="w-full h-full bg-[#0a0a0a] rounded-[11px] flex items-center justify-center p-1.5">
+              {/* Razorpay Brand Icon SVG */}
+              <svg className="w-full h-full" viewBox="0 0 25 25" fill="none" xmlns="http://www.w3.org/2000/svg">
+                <path d="M12.5 0L0 25H6.5L12.5 13L18.5 25H25L12.5 0Z" fill="#38BDF8"/>
+              </svg>
             </div>
           </div>
           <span className="text-xl font-extrabold tracking-widest text-white uppercase font-mono flex items-center gap-1.5">

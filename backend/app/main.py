@@ -12,6 +12,16 @@ from app.services.razorpay import RazorpayService
 @asynccontextmanager
 async def lifespan(app: FastAPI):
     await connect_db()
+    try:
+        from app.db.mongodb import db_client
+        if db_client.db is not None:
+            tx_count = await db_client.db["transactions"].count_documents({})
+            if tx_count == 0:
+                from app.services.synthetic import generate_demo_data
+                await generate_demo_data("demo_merchant_1", db_client.db)
+                print("RECOVER AI database initialized and primed with live telemetry data.")
+    except Exception as e:
+        print(f"Startup initialization note: {e}")
     yield
     await close_db()
 

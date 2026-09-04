@@ -18,6 +18,17 @@ async def list_customers(
     merchant_id = user_dict.get("merchant_id", "demo_merchant_1")
     
     try:
+        # Auto-seed if 0 transactions exist
+        tx_count = await db["transactions"].count_documents({"merchant_id": merchant_id})
+        if tx_count == 0:
+            tx_count = await db["transactions"].count_documents({})
+        if tx_count == 0:
+            from app.services.synthetic import generate_demo_data
+            try:
+                await generate_demo_data(merchant_id, db)
+            except Exception:
+                pass
+
         pipeline = [
             {"$match": {"merchant_id": merchant_id, "customer_id": {"$exists": True, "$ne": None}}},
             {
@@ -73,14 +84,19 @@ async def list_customers(
         recovered_raw = await db["recovery_cases"].aggregate(pipeline_recovered).to_list(1000)
         recovered_map = {str(r["_id"]): r["recovered_amount"] for r in recovered_raw if r.get("_id")}
 
+        # Fetch customer profiles for names & emails
+        db_customers = await db["customers"].find({}).to_list(1000)
+        cust_profile_map = {str(c.get("id") or c.get("_id")): c for c in db_customers}
+
         customers = []
         for idx, cust in enumerate(customers_raw):
             raw_cid = cust.pop("_id", None)
             cid = str(raw_cid) if raw_cid is not None else f"cust_{idx+1}"
+            prof = cust_profile_map.get(cid, {})
             cust["id"] = cid
             cust["customer_id"] = cid
-            cust["email"] = f"cust_{cid[:8] if len(cid) > 8 else cid}@example.com"
-            cust["name"] = f"Customer #{cid[:8] if len(cid) > 8 else cid}"
+            cust["email"] = prof.get("email") or f"cust_{cid[:8] if len(cid) > 8 else cid}@example.com"
+            cust["name"] = prof.get("name") or f"Customer #{cid[:8] if len(cid) > 8 else cid}"
             cust["recovered_amount"] = recovered_map.get(cid, 0.0)
             customers.append(cust)
             
@@ -107,6 +123,11 @@ async def get_customer(
             
         cases_raw = await db["recovery_cases"].find({"customer_id": id}).to_list(100)
         
+        # Profile lookup
+        prof = await db["customers"].find_one({"$or": [{"id": id}, {"_id": id}]})
+        cust_name = prof.get("name") if prof else f"Customer #{id[:8] if len(id) > 8 else id}"
+        cust_email = prof.get("email") if prof else f"cust_{id[:6] if len(id) > 6 else id}@example.com"
+
         transactions = []
         for tx in transactions_raw:
             mongo_id = str(tx.pop("_id")) if "_id" in tx else f"tx_{uuid.uuid4().hex[:8]}"
@@ -129,8 +150,8 @@ async def get_customer(
         return {
             "id": id,
             "customer_id": id,
-            "name": f"Customer #{id[:8] if len(id) > 8 else id}",
-            "email": f"cust_{id[:6] if len(id) > 6 else id}@example.com",
+            "name": cust_name,
+            "email": cust_email,
             "total_transactions": total_tx,
             "successful_transactions": successful_tx,
             "failed_transactions": failed_tx,

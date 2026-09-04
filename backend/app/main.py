@@ -1,5 +1,5 @@
 from fastapi import FastAPI, Request
-from fastapi.responses import JSONResponse
+from fastapi.responses import JSONResponse, Response
 from fastapi.middleware.cors import CORSMiddleware
 from contextlib import asynccontextmanager
 import os
@@ -48,6 +48,13 @@ async def root():
         "docs": "/docs",
         "health": "/api/health"
     }
+
+@app.get("/favicon.ico", include_in_schema=False)
+async def favicon():
+    return Response(
+        content='<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 64 64"><rect width="64" height="64" rx="14" fill="#0b0f0e"/><path d="M17 17h12v12h6V17h12v30H35V35h-6v12H17z" fill="#63e6be"/><path d="M23 23h6v6h-6zm12 12h6v6h-6z" fill="#0b0f0e"/></svg>',
+        media_type="image/svg+xml",
+    )
 
 @app.get("/api/health", operation_id="health_check")
 @app.get("/api/system/health", operation_id="system_health_check")

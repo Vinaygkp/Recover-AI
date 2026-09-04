@@ -2,7 +2,7 @@ import React, { useState } from 'react';
 import { Link, useLocation } from 'react-router-dom';
 import { NAV_ITEMS } from '../../lib/constants';
 import { cn } from '../../lib/utils';
-import { Database, Sparkles, Terminal } from 'lucide-react';
+import { Database, Terminal } from 'lucide-react';
 import { simulationService } from '../../services/simulation';
 import { useToast } from '../ui/Toast';
 import { Button } from '../ui/Button';
@@ -28,16 +28,17 @@ export function Sidebar() {
   return (
     <aside className="w-64 border-r border-neutral-800 bg-[#070707] flex flex-col h-screen sticky top-0 hidden md:flex selection:bg-green-500/30 z-30 shadow-2xl">
       
-      {/* Brand Header */}
+      {/* Brand Header with Custom Logo */}
       <div className="h-20 flex items-center px-6 border-b border-neutral-800/80 bg-[#0a0a0a]/50 backdrop-blur-md">
         <div className="flex items-center gap-3 group cursor-pointer">
-          <div className="w-8 h-8 rounded-xl bg-gradient-to-tr from-green-500 to-yellow-400 p-[1px] shadow-[0_0_20px_rgba(34,197,94,0.4)] group-hover:scale-105 transition-transform">
-            <div className="w-full h-full bg-[#0a0a0a] rounded-[11px] flex items-center justify-center">
-              <Sparkles className="w-4 h-4 text-green-400 animate-pulse" />
-            </div>
+          <div className="w-10 h-10 rounded-xl bg-[#0f0f11] border border-neutral-700/80 shadow-[0_0_20px_rgba(56,189,248,0.15)] flex items-center justify-center relative overflow-hidden group-hover:scale-105 transition-transform">
+            <div className="absolute inset-0 bg-gradient-to-tr from-sky-500/10 to-transparent pointer-events-none" />
+            <svg className="w-5 h-5 text-sky-400 drop-shadow-[0_0_8px_rgba(56,189,248,0.6)]" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
+              <path d="M12 4L3 18H8.5L12 11.5L15.5 18H21L12 4Z" fill="currentColor" />
+            </svg>
           </div>
-          <span className="text-lg font-extrabold tracking-widest text-white uppercase font-mono flex items-center gap-1">
-            Recover <span className="text-transparent bg-clip-text bg-gradient-to-r from-green-400 to-yellow-400">AI</span>
+          <span className="text-sm font-extrabold tracking-wider text-white uppercase font-mono flex items-center gap-1.5">
+            RECOVER <span className="text-amber-400">AI</span>
           </span>
         </div>
       </div>
